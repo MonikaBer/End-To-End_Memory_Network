@@ -15,7 +15,7 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-- install (PyTorch)[https://pytorch.org/]
+- install [PyTorch](https://pytorch.org/)
 
 - install another modules:
 ```
