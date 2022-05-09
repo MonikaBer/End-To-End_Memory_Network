@@ -26,4 +26,5 @@ pip install torchtext==0.6.0
 # Execution
 ```
 python MemN2N/cli.py --help
+python MemN2N/cli.py --train --gpu
 ```
