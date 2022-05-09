@@ -4,9 +4,9 @@ import torch
 from torchtext.datasets import BABI20
 
 
-def dataloader(batch_size, memory_size, task, joint, tenK):
+def dataloader(batch_size, memory_size, task, joint, tenK, ifGPU):
     train_iter, valid_iter, test_iter = BABI20.iters(
-        batch_size=batch_size, memory_size=memory_size, task=task, joint=joint, tenK=tenK, device=torch.device("cpu"))
+        batch_size=batch_size, memory_size=memory_size, task=task, joint=joint, tenK=tenK, device=torch.device("cuda" if ifGPU else "cpu"))
     return train_iter, valid_iter, test_iter, train_iter.dataset.fields['query'].vocab
 
 
@@ -18,10 +18,11 @@ def get_params(config):
         'use_bow',
         'use_lw',
         'use_ls',
+        'gpu'
     ])
     params = Params(
         config.embed_size, config.memory_size, config.num_hops, config.use_bow,
-        config.use_lw, config.use_ls)
+        config.use_lw, config.use_ls, config.gpu)
     return params
 
 

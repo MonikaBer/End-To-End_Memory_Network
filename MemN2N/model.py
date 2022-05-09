@@ -16,6 +16,7 @@ class MemN2N(nn.Module):
         self.use_bow = params.use_bow
         self.use_lw = params.use_lw
         self.use_ls = params.use_ls
+        self.gpu = params.gpu
         self.vocab = vocab
 
         # create parameters according to different type of weight tying
@@ -79,4 +80,4 @@ class MemN2N(nn.Module):
         else:
             func = lambda j, k: 1 - (j + 1) / J - (k + 1) / d * (1 - 2 * (j + 1) / J)    # 0-based indexing
             weights = torch.from_numpy(np.fromfunction(func, (J, d), dtype=np.float32))
-        return weights.cuda() if torch.cuda.is_available() else weights
+        return weights.cuda() if self.gpu else weights

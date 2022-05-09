@@ -70,15 +70,15 @@ def eval(test_iter, model):
 def run(config):
     print("#! preparing data...")
     train_iter, valid_iter, test_iter, vocab = dataloader(config.batch_size, config.memory_size,
-                                                          config.task, config.joint, config.tenk)
+                                                          config.task, config.joint, config.tenk, config.gpu)
 
     print("#! instantiating model...")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if config.gpu else "cpu")
     model = MemN2N(get_params(config), vocab).to(device)
 
     if config.file:
         with open(os.path.join(config.save_dir, config.file), 'rb') as f:
-            if torch.cuda.is_available():
+            if config.gpu:
                 state_dict = torch.load(f, map_location=lambda storage, loc: storage.cuda())
             else:
                 state_dict = torch.load(f, map_location=lambda storage, loc: storage)

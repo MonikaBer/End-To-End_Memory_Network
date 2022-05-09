@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 import click
+import torch
 
 from main import run
 
@@ -28,8 +29,19 @@ from main import run
 @click.option('--use_bow', is_flag=True, help="Use BoW, or PE sentence representation.")
 @click.option('--use_lw', is_flag=True, help="Use layer-wise, or adjacent weight tying.")
 @click.option('--use_ls', is_flag=True, help="Use linear start.")
+@click.option('--gpu', is_flag=True, help="Use GPU.")
+
 def cli(**kwargs):
     config = namedtuple("Config", kwargs.keys())(**kwargs)
+    if config.gpu and not torch.cuda.is_available():
+        config.gpu = False
+        print("GPU isn't available\n")
+
+    if config.gpu:
+        print('GPU using\n')
+    else:
+        print('CPU using\n')
+
     run(config)
 
 
