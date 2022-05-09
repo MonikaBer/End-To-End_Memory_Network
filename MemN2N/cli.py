@@ -21,18 +21,19 @@ from main import run
               show_default=True)
 @click.option('--memory_size', type=int, default=50, help="Capacity of memory.",
               show_default=True)
-@click.option('--num_hops', type=int, default=3, help="Embedding size.", show_default=True)
+@click.option('--num_hops', type=int, default=3, help="Number of hops.", show_default=True)
 @click.option('--max_clip', type=float, default=40.0, help="Max gradient norm to clip",
               show_default=True)
 @click.option('--joint', is_flag=True, help="Joint learning.")
 @click.option('--tenk', is_flag=True, help="Use 10K dataset.")
 @click.option('--use_bow', is_flag=True, help="Use BoW, or PE sentence representation.")
 @click.option('--use_lw', is_flag=True, help="Use layer-wise, or adjacent weight tying.")
-@click.option('--use_ls', is_flag=True, help="Use linear start.")
+@click.option('--use_ls', is_flag=True, help="Use linear start, or not.")
 @click.option('--gpu', is_flag=True, help="Use GPU.")
 
 def cli(**kwargs):
     config = namedtuple("Config", kwargs.keys())(**kwargs)
+
     if config.gpu and not torch.cuda.is_available():
         config.gpu = False
         print("GPU isn't available\n")
