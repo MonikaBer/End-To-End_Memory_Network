@@ -5,8 +5,8 @@ Doc
 https://demo.hedgedoc.org/q6ECn9yVQam88qt6V47kPw?both
 
 # Requirements
-- python3.8
-- pip
+- python 3.8.10
+- pip 20.0.2
 
 # Configuration
 - create virtual environment
