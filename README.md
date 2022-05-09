@@ -2,8 +2,8 @@
 End-To-End Memory Network implementation and experiments
 
 # Documentation
-[v1](https://demo.hedgedoc.org/q6ECn9yVQam88qt6V47kPw?both)
-[final](https://demo.hedgedoc.org/fb0incRUReC2PJciRZXvcA)
+- [v1](https://demo.hedgedoc.org/q6ECn9yVQam88qt6V47kPw?both)
+- [final](https://demo.hedgedoc.org/fb0incRUReC2PJciRZXvcA)
 
 # Requirements
 - python 3.8.10
