@@ -4,11 +4,28 @@ class BabiConfig(object):
     """
     Configuration for bAbI
     """
-    def __init__(self, train_story, train_questions, dictionary):
+    def __init__(self,
+        train_story,
+        train_questions,
+        dictionary,
+        epochs,
+        hops,
+        LS,
+        RN,
+        BoW,
+        LW,
+        NL,
+        batch_size):
+
         self.dictionary       = dictionary
-        self.batch_size       = 32
-        self.nhops            = 3
-        self.nepochs          = 100
+        self.batch_size       = batch_size
+        self.nhops            = hops
+
+        if epochs:
+            self.nepochs          = epochs
+        else:
+            self.nepochs          = 100
+
         self.lrate_decay_step = 25   # reduce learning rate by half every 25 epochs
 
         # Use 10% of training data for validation
@@ -17,13 +34,18 @@ class BabiConfig(object):
 
         self.train_range    = np.array(range(nb_train_questions))
         self.val_range      = np.array(range(nb_train_questions, nb_questions))
-        self.enable_time    = True   # add time embeddings
-        self.use_bow        = False  # use Bag-of-Words instead of Position-Encoding
-        self.linear_start   = True
-        self.share_type     = 1      # 1: adjacent, 2: layer-wise weight tying
+        self.enable_time    = RN   # add time embeddings
+        self.use_bow        = BoW  # use Bag-of-Words instead of Position-Encoding
+        self.linear_start   = LS
+
+        if LW:
+            self.share_type     = 2     # layer-wise weight tying
+        else:
+            self.share_type     = 1     # adjacent weight tying
+
         self.randomize_time = 0.1    # amount of noise injected into time index
         self.add_proj       = False  # add linear layer between internal states
-        self.add_nonlin     = False  # add non-linearity to internal states
+        self.add_nonlin     = NL     # add non-linearity to internal states
 
         if self.linear_start:
             self.ls_nepochs          = 20
@@ -57,13 +79,28 @@ class BabiConfigJoint(object):
     """
     Joint configuration for bAbI
     """
-    def __init__(self, train_story, train_questions, dictionary):
+    def __init__(self,
+        train_story,
+        train_questions,
+        dictionary,
+        epochs,
+        hops,
+        LS,
+        RN,
+        BoW,
+        LW,
+        NL,
+        batch_size):
 
         # TODO: Inherit from BabiConfig
         self.dictionary       = dictionary
-        self.batch_size       = 32
-        self.nhops            = 3
-        self.nepochs          = 60
+        self.batch_size       = batch_size
+        self.nhops            = hops
+
+        if epochs:
+            self.nepochs          = epochs
+        else:
+            self.nepochs          = 60
 
         self.lrate_decay_step = 15   # reduce learning rate by half every 15 epochs  # XXX:
 
@@ -76,13 +113,18 @@ class BabiConfigJoint(object):
         self.train_range = rp[:nb_train_questions]
         self.val_range   = rp[nb_train_questions:]
 
-        self.enable_time    = True   # add time embeddings
-        self.use_bow        = False  # use Bag-of-Words instead of Position-Encoding
-        self.linear_start   = True
-        self.share_type     = 1      # 1: adjacent, 2: layer-wise weight tying
-        self.randomize_time = 0.1    # amount of noise injected into time index
-        self.add_proj       = False  # add linear layer between internal states
-        self.add_nonlin     = False  # add non-linearity to internal states
+        self.enable_time    = RN   # add time embeddings
+        self.use_bow        = BoW  # use Bag-of-Words instead of Position-Encoding
+        self.linear_start   = LS
+
+        if LW:
+            self.share_type     = 2     # layer-wise weight tying
+        else:
+            self.share_type     = 1     # adjacent weight tying
+
+        self.randomize_time = 0.1       # amount of noise injected into time index
+        self.add_proj       = False     # add linear layer between internal states
+        self.add_nonlin     = NL        # add non-linearity to internal states
 
         if self.linear_start:
             self.ls_nepochs          = 30  # XXX:
