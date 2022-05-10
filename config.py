@@ -65,7 +65,7 @@ class BabiConfigJoint(object):
         self.nhops            = 3
         self.nepochs          = 60
 
-        self.lrate_decay_step = 15   # reduce learning rate by half every 25 epochs  # XXX:
+        self.lrate_decay_step = 15   # reduce learning rate by half every 15 epochs  # XXX:
 
         # Use 10% of training data for validation  # XXX
         nb_questions        = train_questions.shape[1]
