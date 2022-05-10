@@ -16,16 +16,12 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-- install [PyTorch](https://pytorch.org/)
-
-- install another modules:
+- install modules:
 ```
-pip install click
-pip install torchtext==0.6.0
+pip install ...
 ```
 
 # Execution
 ```
-python MemN2N/cli.py --help
-python MemN2N/cli.py --train --gpu
+
 ```
