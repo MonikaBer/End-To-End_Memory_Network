@@ -206,7 +206,8 @@ def run_joint_tasks(
 
         test(test_story, test_questions, test_qstory, memory, model, loss, general_config)
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser()
     # dataset 1k/10k
     parser.add_argument("-d", "--data-dir", default = "data/tasks_1-20_v1-2/en",
@@ -264,10 +265,22 @@ if __name__ == "__main__":
     if not os.path.exists(args.data_dir):
         print("The data directory '%s' does not exist. Please download it first." % args.data_dir)
         sys.exit(1)
-
     print("Using data from %s" % args.data_dir)
-    if args.all_tasks:
-        run_all_tasks(
+
+    if args.joint_tasks:
+        # joint training
+        if args.epochs == None:
+            args.epochs = 60
+        if args.lrate_decay_step == None:
+            args.lrate_decay_step = 15
+        if args.ls_nepochs == None:
+            args.ls_nepochs = 30
+        if args.ls_lrate_decay_step == None:
+            args.ls_lrate_decay_step = 31
+        if args.embed_dim == None:
+            args.embed_dim = 50
+
+        run_joint_tasks(
             data_dir = args.data_dir,
             epochs = args.epochs,
             hops = args.hops,
@@ -287,8 +300,22 @@ if __name__ == "__main__":
             embed_dim = args.embed_dim,
             sent_nr = args.sent_nr
         )
-    elif args.joint_tasks:
-        run_joint_tasks(
+        return 0
+
+    # per-task training
+    if args.epochs == None:
+        args.epochs = 100
+    if args.lrate_decay_step == None:
+        args.lrate_decay_step = 25
+    if args.ls_nepochs == None:
+        args.ls_nepochs = 20
+    if args.ls_lrate_decay_step == None:
+        args.ls_lrate_decay_step = 21
+    if args.embed_dim == None:
+        args.embed_dim = 20
+
+    if args.all_tasks:
+        run_all_tasks(
             data_dir = args.data_dir,
             epochs = args.epochs,
             hops = args.hops,
@@ -330,3 +357,9 @@ if __name__ == "__main__":
             embed_dim = args.embed_dim,
             sent_nr = args.sent_nr
         )
+
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())

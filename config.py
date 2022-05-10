@@ -30,16 +30,8 @@ class BabiConfig(object):
         self.dictionary       = dictionary
         self.batch_size       = batch_size
         self.nhops            = hops
-
-        if epochs:
-            self.nepochs          = epochs
-        else:
-            self.nepochs          = 100
-
-        if lrate_decay_step:
-            self.lrate_decay_step = lrate_decay_step
-        else:
-            self.lrate_decay_step = 25   # reduce learning rate by half every 25 epochs
+        self.nepochs          = epochs
+        self.lrate_decay_step = lrate_decay_step    # reduce learning rate by half every 25 epochs
 
         # Use 10% of training data for validation
         nb_questions       = train_questions.shape[1]
@@ -62,21 +54,9 @@ class BabiConfig(object):
         self.add_nonlin     = NL        # add non-linearity to internal states
 
         if self.linear_start:
-            if ls_nepochs:
-                self.ls_nepochs          = ls_nepochs
-            else:
-                self.ls_nepochs          = 20
-
-            if ls_lrate_decay_step:
-                self.ls_lrate_decay_step = ls_lrate_decay_step
-            else:
-                self.ls_lrate_decay_step = 21
-
+            self.ls_nepochs          = ls_nepochs
+            self.ls_lrate_decay_step = ls_lrate_decay_step
             self.ls_init_lrate       = init_lrate / 2
-
-
-        if embed_dim == None:
-            embed_dim = 20
 
         # Training configuration
         self.train_config = {
@@ -131,16 +111,8 @@ class BabiConfigJoint(object):
         self.dictionary       = dictionary
         self.batch_size       = batch_size
         self.nhops            = hops
-
-        if epochs:
-            self.nepochs          = epochs
-        else:
-            self.nepochs          = 60
-
-        if lrate_decay_step:
-            self.lrate_decay_step = lrate_decay_step
-        else:
-            self.lrate_decay_step = 15   # reduce learning rate by half every 15 epochs
+        self.nepochs          = epochs
+        self.lrate_decay_step = lrate_decay_step    # reduce learning rate by half every 15 epochs
 
         # Use 10% of training data for validation  # XXX
         nb_questions        = train_questions.shape[1]
@@ -166,21 +138,9 @@ class BabiConfigJoint(object):
         self.add_nonlin     = NL        # add non-linearity to internal states
 
         if self.linear_start:
-            if ls_nepochs:
-                self.ls_nepochs          = ls_nepochs
-            else:
-                self.ls_nepochs          = 30
-
-            if ls_lrate_decay_step:
-                self.ls_lrate_decay_step = ls_lrate_decay_step
-            else:
-                self.ls_lrate_decay_step = 31
-
+            self.ls_nepochs          = ls_nepochs
+            self.ls_lrate_decay_step = ls_lrate_decay_step
             self.ls_init_lrate       = init_lrate / 2
-
-
-        if embed_dim == None:
-            embed_dim = 50
 
         # Training configuration
         self.train_config = {
