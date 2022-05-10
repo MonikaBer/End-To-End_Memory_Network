@@ -1,5 +1,4 @@
-# MemN2N-babi-python
-# https://github.com/vinhkhuc/MemN2N-babi-python
+# MemN2N-babi-python [link](https://github.com/vinhkhuc/MemN2N-babi-python)
 
 ## End-To-End Memory Networks for Question Answering
 This is an implementation of MemN2N model in Python for the [bAbI question-answering tasks](http://fb.ai/babi)
