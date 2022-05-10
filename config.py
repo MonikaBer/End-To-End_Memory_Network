@@ -15,7 +15,17 @@ class BabiConfig(object):
         BoW,
         LW,
         NL,
-        batch_size):
+        batch_size,
+        lrate_decay_step,
+        randomize_time,
+        AP,
+        ls_nepochs,
+        ls_lrate_decay_step,
+        init_lrate,
+        max_grad_norm,
+        embed_dim,
+        sent_nr
+        ):
 
         self.dictionary       = dictionary
         self.batch_size       = batch_size
@@ -26,7 +36,10 @@ class BabiConfig(object):
         else:
             self.nepochs          = 100
 
-        self.lrate_decay_step = 25   # reduce learning rate by half every 25 epochs
+        if lrate_decay_step:
+            self.lrate_decay_step = lrate_decay_step
+        else:
+            self.lrate_decay_step = 25   # reduce learning rate by half every 25 epochs
 
         # Use 10% of training data for validation
         nb_questions       = train_questions.shape[1]
@@ -43,22 +56,35 @@ class BabiConfig(object):
         else:
             self.share_type     = 1     # adjacent weight tying
 
-        self.randomize_time = 0.1    # amount of noise injected into time index
-        self.add_proj       = False  # add linear layer between internal states
-        self.add_nonlin     = NL     # add non-linearity to internal states
+        self.randomize_time = randomize_time   # amount of noise injected into time index
+
+        self.add_proj       = AP        # add linear layer between internal states
+        self.add_nonlin     = NL        # add non-linearity to internal states
 
         if self.linear_start:
-            self.ls_nepochs          = 20
-            self.ls_lrate_decay_step = 21
-            self.ls_init_lrate       = 0.01 / 2
+            if ls_nepochs:
+                self.ls_nepochs          = ls_nepochs
+            else:
+                self.ls_nepochs          = 20
+
+            if ls_lrate_decay_step:
+                self.ls_lrate_decay_step = ls_lrate_decay_step
+            else:
+                self.ls_lrate_decay_step = 21
+
+            self.ls_init_lrate       = init_lrate / 2
+
+
+        if embed_dim == None:
+            embed_dim = 20
 
         # Training configuration
         self.train_config = {
-            "init_lrate"   : 0.01,
-            "max_grad_norm": 40,
-            "in_dim"       : 20,
-            "out_dim"      : 20,
-            "sz"           : min(50, train_story.shape[1]),  # number of sentences
+            "init_lrate"   : init_lrate,
+            "max_grad_norm": max_grad_norm,
+            "in_dim"       : embed_dim,
+            "out_dim"      : embed_dim,
+            "sz"           : min(sent_nr, train_story.shape[1]),  # number of sentences
             "voc_sz"       : len(self.dictionary),
             "bsz"          : self.batch_size,
             "max_words"    : len(train_story),
@@ -66,7 +92,7 @@ class BabiConfig(object):
         }
 
         if self.linear_start:
-            self.train_config["init_lrate"] = 0.01 / 2
+            self.train_config["init_lrate"] = self.ls_init_lrate
 
         if self.enable_time:
             self.train_config.update({
@@ -90,7 +116,16 @@ class BabiConfigJoint(object):
         BoW,
         LW,
         NL,
-        batch_size):
+        batch_size,
+        lrate_decay_step,
+        randomize_time,
+        AP,
+        ls_nepochs,
+        ls_lrate_decay_step,
+        init_lrate,
+        max_grad_norm,
+        embed_dim,
+        sent_nr):
 
         # TODO: Inherit from BabiConfig
         self.dictionary       = dictionary
@@ -102,7 +137,10 @@ class BabiConfigJoint(object):
         else:
             self.nepochs          = 60
 
-        self.lrate_decay_step = 15   # reduce learning rate by half every 15 epochs  # XXX:
+        if lrate_decay_step:
+            self.lrate_decay_step = lrate_decay_step
+        else:
+            self.lrate_decay_step = 15   # reduce learning rate by half every 15 epochs
 
         # Use 10% of training data for validation  # XXX
         nb_questions        = train_questions.shape[1]
@@ -122,22 +160,35 @@ class BabiConfigJoint(object):
         else:
             self.share_type     = 1     # adjacent weight tying
 
-        self.randomize_time = 0.1       # amount of noise injected into time index
-        self.add_proj       = False     # add linear layer between internal states
+        self.randomize_time = randomize_time    # amount of noise injected into time index
+
+        self.add_proj       = AP        # add linear layer between internal states
         self.add_nonlin     = NL        # add non-linearity to internal states
 
         if self.linear_start:
-            self.ls_nepochs          = 30  # XXX:
-            self.ls_lrate_decay_step = 31  # XXX:
-            self.ls_init_lrate       = 0.01 / 2
+            if ls_nepochs:
+                self.ls_nepochs          = ls_nepochs
+            else:
+                self.ls_nepochs          = 30
+
+            if ls_lrate_decay_step:
+                self.ls_lrate_decay_step = ls_lrate_decay_step
+            else:
+                self.ls_lrate_decay_step = 31
+
+            self.ls_init_lrate       = init_lrate / 2
+
+
+        if embed_dim == None:
+            embed_dim = 50
 
         # Training configuration
         self.train_config = {
-            "init_lrate"   : 0.01,
-            "max_grad_norm": 40,
-            "in_dim"       : 50,  # XXX:
-            "out_dim"      : 50,  # XXX:
-            "sz"           : min(50, train_story.shape[1]),
+            "init_lrate"   : init_lrate,
+            "max_grad_norm": max_grad_norm,
+            "in_dim"       : embed_dim,  # XXX:
+            "out_dim"      : embed_dim,  # XXX:
+            "sz"           : min(sent_nr, train_story.shape[1]),
             "voc_sz"       : len(self.dictionary),
             "bsz"          : self.batch_size,
             "max_words"    : len(train_story),
@@ -145,7 +196,7 @@ class BabiConfigJoint(object):
         }
 
         if self.linear_start:
-            self.train_config["init_lrate"] = 0.01 / 2
+            self.train_config["init_lrate"] = self.ls_init_lrate
 
         if self.enable_time:
             self.train_config.update({

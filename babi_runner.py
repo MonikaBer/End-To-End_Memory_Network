@@ -25,7 +25,16 @@ def run_task(
     BoW,
     LW,
     NL,
-    batch_size):
+    batch_size,
+    lrate_decay_step,
+    randomize_time,
+    AP,
+    ls_nepochs,
+    ls_lrate_decay_step,
+    init_lrate,
+    max_grad_norm,
+    embed_dim,
+    sent_nr):
     """
     Train and test for each task
     """
@@ -50,7 +59,16 @@ def run_task(
         BoW = BoW,
         LW = LW,
         NL = NL,
-        batch_size = batch_size
+        batch_size = batch_size,
+        lrate_decay_step = lrate_decay_step,
+        randomize_time = randomize_time,
+        AP = AP,
+        ls_nepochs = ls_nepochs,
+        ls_lrate_decay_step = ls_lrate_decay_step,
+        init_lrate = init_lrate,
+        max_grad_norm = max_grad_norm,
+        embed_dim = embed_dim,
+        sent_nr = sent_nr
     )
 
     memory, model, loss = build_model(general_config)
@@ -72,7 +90,16 @@ def run_all_tasks(
         BoW,
         LW,
         NL,
-        batch_size):
+        batch_size,
+        lrate_decay_step,
+        randomize_time,
+        AP,
+        ls_nepochs,
+        ls_lrate_decay_step,
+        init_lrate,
+        max_grad_norm,
+        embed_dim,
+        sent_nr):
     """
     Train and test for all tasks
     """
@@ -88,7 +115,16 @@ def run_all_tasks(
             BoW = BoW,
             LW = LW,
             NL = NL,
-            batch_size = batch_size
+            batch_size = batch_size,
+            lrate_decay_step = lrate_decay_step,
+            randomize_time = randomize_time,
+            AP = AP,
+            ls_nepochs = ls_nepochs,
+            ls_lrate_decay_step = ls_lrate_decay_step,
+            init_lrate = init_lrate,
+            max_grad_norm = max_grad_norm,
+            embed_dim = embed_dim,
+            sent_nr = sent_nr
         )
 
 
@@ -101,7 +137,16 @@ def run_joint_tasks(
         BoW,
         LW,
         NL,
-        batch_size):
+        batch_size,
+        lrate_decay_step,
+        randomize_time,
+        AP,
+        ls_nepochs,
+        ls_lrate_decay_step,
+        init_lrate,
+        max_grad_norm,
+        embed_dim,
+        sent_nr):
     """
     Train and test for all tasks but the trained model is built using training data from all tasks.
     """
@@ -132,7 +177,16 @@ def run_joint_tasks(
         BoW = BoW,
         LW = LW,
         NL = NL,
-        batch_size = batch_size
+        batch_size = batch_size,
+        lrate_decay_step = lrate_decay_step,
+        randomize_time = randomize_time,
+        AP = AP,
+        ls_nepochs = ls_nepochs,
+        ls_lrate_decay_step = ls_lrate_decay_step,
+        init_lrate = init_lrate,
+        max_grad_norm = max_grad_norm,
+        embed_dim = embed_dim,
+        sent_nr = sent_nr
     )
 
     memory, model, loss = build_model(general_config)
@@ -172,12 +226,29 @@ if __name__ == "__main__":
     parser.add_argument("--LW", action = "store_true",
                         help = "layer-wise (instead of adjacent) weight tying (default: %(default)s)")
     parser.add_argument("--NL", action = "store_true",
-                        help = "non-linearity (default: %(default)s)")
+                        help = "add non-linearity to internal states (default: %(default)s)")
 
     # another parameters
     parser.add_argument("--batch-size", type = int, default = 32,
                         help = "batch size (default: %(default)s)")
-
+    parser.add_argument("--lrate-decay-step", type = int,
+                        help = "learning rate decay step (default: 25 - single, 15 - joint)")
+    parser.add_argument("--randomize-time", type = float, default = 0.1,
+                        help = "amount of noise injected into time index (default: %(default)s)")
+    parser.add_argument("--AP", action = "store_true",
+                        help = "add linear layer between internal states (default: %(default)s)")
+    parser.add_argument("--ls-nepochs", type = int,
+                        help = "number of epochs for LS (default: 20 - single, 30 - joint))")
+    parser.add_argument("--ls-lrate-decay-step", type = int,
+                        help = "learning rate decay step for LS (default: 21 - single, 31 - joint)")
+    parser.add_argument("--init-lrate", type = float, default = 0.01,
+                        help = "initial learning rate (default: %(default)s)")
+    parser.add_argument("--max-grad-norm", type = int, default = 40,
+                        help = "max gradient norm (default: %(default)s)")
+    parser.add_argument("--embed-dim", type = int,
+                        help = "embedding dimension (for input and output) (default: 20 - single, 50 - joint)")
+    parser.add_argument("--sent-nr", type = int, default = 50,
+                        help = "number of recent sentences in memory (default: %(default)s)")
 
     # single/all/joint training
     group = parser.add_mutually_exclusive_group()
@@ -205,7 +276,16 @@ if __name__ == "__main__":
             BoW = args.BoW,
             LW = args.LW,
             NL = args.NL,
-            batch_size = args.batch_size
+            batch_size = args.batch_size,
+            lrate_decay_step = args.lrate_decay_step,
+            randomize_time = args.randomize_time,
+            AP = args.AP,
+            ls_nepochs = args.ls_nepochs,
+            ls_lrate_decay_step = args.ls_lrate_decay_step,
+            init_lrate = args.init_lrate,
+            max_grad_norm = args.max_grad_norm,
+            embed_dim = args.embed_dim,
+            sent_nr = args.sent_nr
         )
     elif args.joint_tasks:
         run_joint_tasks(
@@ -217,7 +297,16 @@ if __name__ == "__main__":
             BoW = args.BoW,
             LW = args.LW,
             NL = args.NL,
-            batch_size = args.batch_size
+            batch_size = args.batch_size,
+            lrate_decay_step = args.lrate_decay_step,
+            randomize_time = args.randomize_time,
+            AP = args.AP,
+            ls_nepochs = args.ls_nepochs,
+            ls_lrate_decay_step = args.ls_lrate_decay_step,
+            init_lrate = args.init_lrate,
+            max_grad_norm = args.max_grad_norm,
+            embed_dim = args.embed_dim,
+            sent_nr = args.sent_nr
         )
     else:
         run_task(
@@ -230,5 +319,14 @@ if __name__ == "__main__":
             BoW = args.BoW,
             LW = args.LW,
             NL = args.NL,
-            batch_size = args.batch_size
+            batch_size = args.batch_size,
+            lrate_decay_step = args.lrate_decay_step,
+            randomize_time = args.randomize_time,
+            AP = args.AP,
+            ls_nepochs = args.ls_nepochs,
+            ls_lrate_decay_step = args.ls_lrate_decay_step,
+            init_lrate = args.init_lrate,
+            max_grad_norm = args.max_grad_norm,
+            embed_dim = args.embed_dim,
+            sent_nr = args.sent_nr
         )
