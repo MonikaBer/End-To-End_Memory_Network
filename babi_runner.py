@@ -50,7 +50,6 @@ def run_task(
 
     general_config = BabiConfig(
         train_story = train_story,
-        train_questions = train_questions,
         dictionary = dictionary,
         epochs = epochs,
         hops = hops,
@@ -70,6 +69,7 @@ def run_task(
         embed_dim = embed_dim,
         sent_nr = sent_nr
     )
+    general_config.split_sets(train_questions = train_questions)
 
     memory, model, loss = build_model(general_config)
 
@@ -168,7 +168,6 @@ def run_joint_tasks(
 
     general_config = BabiConfigJoint(
         train_story = train_story,
-        train_questions = train_questions,
         dictionary = dictionary,
         epochs = epochs,
         hops = hops,
@@ -188,6 +187,7 @@ def run_joint_tasks(
         embed_dim = embed_dim,
         sent_nr = sent_nr
     )
+    general_config.split_sets(train_questions = train_questions)
 
     memory, model, loss = build_model(general_config)
 
@@ -272,7 +272,7 @@ def main():
         if args.epochs == None:
             args.epochs = 60
         if args.lrate_decay_step == None:
-            args.lrate_decay_step = 15
+            args.lrate_decay_step = 15  # reduce learning rate by half every 15 epochs
         if args.ls_nepochs == None:
             args.ls_nepochs = 30
         if args.ls_lrate_decay_step == None:
@@ -306,7 +306,7 @@ def main():
     if args.epochs == None:
         args.epochs = 100
     if args.lrate_decay_step == None:
-        args.lrate_decay_step = 25
+        args.lrate_decay_step = 25  # reduce learning rate by half every 25 epochs
     if args.ls_nepochs == None:
         args.ls_nepochs = 20
     if args.ls_lrate_decay_step == None:
