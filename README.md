@@ -32,3 +32,10 @@ tar -xvzf tasks_1-20_v1-2.tar.gz
 ```
 python2.7 babi_runner.py -t 1
 ```
+
+```
+./train-experiment.sh -t=1 -e=1 -r=2
+```
+ * t - task number
+ * e - experiment number
+ * r - reapet r times
