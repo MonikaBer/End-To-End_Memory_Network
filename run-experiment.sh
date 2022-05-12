@@ -45,8 +45,11 @@ then
 fi
 
 source venv/bin/activate
-mkdir results 2>/dev/null
-RESULT_REGEX='(?<=Test error: )([0-9]{1,3}([\.]?[0-9]*))'
+RESULT_REGEX='100 \| train error: .*\nTest error: ([0-9]{1,3}([\.]?[0-9]*))'
+
+if [ ! -f results.csv ]; then
+    echo "EXPERIMENT;TASK;TRAIN;VAL;TEST" > results.csv
+fi
 
 for i in $( eval echo {1..${TIMES}} ) 
 do
@@ -54,32 +57,39 @@ do
 
     if [ ${EXPERIMENT} -eq 1 ]; then
         #BoW
-        python2.7 babi_runner.py -t $TASK --BoW | tee >( grep -Po "$RESULT_REGEX" >> results/experiment_1.txt )
+        RES=$( python2.7 babi_runner.py -t $TASK --BoW | tee /dev/stderr | tee /dev/stderr | grep -Poz "$RESULT_REGEX" )
     elif [ ${EXPERIMENT} -eq 2 ]; then
         #PE
-        python2.7 babi_runner.py -t $TASK  | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_2.txt )
+        RES=$( python2.7 babi_runner.py -t $TASK | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 3 ]; then
         # PE + LS
-        python2.7 babi_runner.py -t $TASK --LS | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_3.txt )
+        RES=$( python2.7 babi_runner.py -t $TASK --LS | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 4 ]; then
         # PE + LS + RN
-        python2.7 babi_runner.py -t $TASK --LS --RN | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_4.txt )
+        RES=$( python2.7 babi_runner.py -t $TASK --LS --RN | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 5 ]; then
         # 1 hop + PE + LS + joint
-        python2.7 babi_runner.py --LS --hops 1 -j | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_5.txt )
+        RES=$( python2.7 babi_runner.py --LS --hops 1 -j | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 6 ]; then
         # 2 hop + PE + LS + joint
-        python2.7 babi_runner.py --LS --hops 2 -j | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_6.txt )
+        RES=$( python2.7 babi_runner.py --LS --hops 2 -j | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 7 ]; then
         # 3 hop + PE + LS + joint
-        python2.7 babi_runner.py --LS --hops 3 -j | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_7.txt )
+        RES=$( python2.7 babi_runner.py --LS --hops 3 -j | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 8 ]; then
         # PE + LS + RN + joint
-        python2.7 babi_runner.py --LS -j -RN | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_8.txt )
+        RES=$( python2.7 babi_runner.py --LS -j -RN | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     elif [ ${EXPERIMENT} -eq 9 ]; then
         # PE + LS + LW + joint
-        python2.7 babi_runner.py --LS -j -LW | tee >( grep  -Po "$RESULT_REGEX" >> results/experiment_9.txt )
+        RES=$( python2.7 babi_runner.py --LS -j -LW | tee /dev/stderr | grep -Poz "$RESULT_REGEX")
     else
         echo "Unknown experiment"
     fi
 done
+
+
+TRAIN=`echo $RES | tee /dev/stderr | grep -Po '(?<=train error: )([0-9]{1,3}([\.]?[0-9]*))'`
+VAL=`echo $RES | tee /dev/stderr | grep -Po '(?<=val error: )([0-9]{1,3}([\.]?[0-9]*))'`
+TEST=`echo $RES | tee /dev/stderr | grep -Po '(?<=Test error: )([0-9]{1,3}([\.]?[0-9]*))'`
+
+echo "$EXPERIMENT;$TASK;$TRAIN;$VAL;$TEST" >> results.csv
