@@ -32,3 +32,40 @@ tar -xvzf tasks_1-20_v1-2.tar.gz
 ```
 python2.7 babi_runner.py -t 1
 ```
+
+To run specific experiment run:
+```
+./train-experiment.sh -t=1 -e=1 -r=2
+```
+ * t - task number
+ * e - experiment number
+ * r - reapet r times
+Experiments numeration:
+
+
+|No |Experiment|
+|---|---|
+| 1 | BoW |
+| 2 | PE |
+| 3 | PE + LS |
+| 4 | PE + LS + RN |
+| 5 | 1 hop + PE + LS + joint | 
+| 6 | 2 hop + PE + LS + joint |
+| 7 | 3 hop + PE + LS + joint |
+| 8 | PE + LS + RN + joint |
+| 9 | PE + LS + LW + joint |
+
+To run single experiment 10 times on all tasks run:
+```
+./run-one.sh experiment
+```
+
+where task is number of experiment.
+
+
+To run training for all experiments 10 times on all tasks run:
+
+```
+./run-all.sh
+```
+
