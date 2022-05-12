@@ -55,6 +55,12 @@ Experiments numeration:
 | 8 | PE + LS + RN + joint |
 | 9 | PE + LS + LW + joint |
 
+To run single experiment 10 times on all tasks run:
+```
+./run-one.sh experiment
+```
+
+where task is number of experiment.
 
 
 To run training for all experiments 10 times on all tasks run:

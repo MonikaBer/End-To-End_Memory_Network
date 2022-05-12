@@ -85,11 +85,10 @@ do
     else
         echo "Unknown experiment"
     fi
+
+    TRAIN=`echo $RES | tee /dev/stderr | grep -Po '(?<=train error: )([0-9]{1,3}([\.]?[0-9]*))'`
+    VAL=`echo $RES | tee /dev/stderr | grep -Po '(?<=val error: )([0-9]{1,3}([\.]?[0-9]*))'`
+    TEST=`echo $RES | tee /dev/stderr | grep -Po '(?<=Test error: )([0-9]{1,3}([\.]?[0-9]*))'`
+
+    echo "$EXPERIMENT;$TASK;$TRAIN;$VAL;$TEST" >> results.csv
 done
-
-
-TRAIN=`echo $RES | tee /dev/stderr | grep -Po '(?<=train error: )([0-9]{1,3}([\.]?[0-9]*))'`
-VAL=`echo $RES | tee /dev/stderr | grep -Po '(?<=val error: )([0-9]{1,3}([\.]?[0-9]*))'`
-TEST=`echo $RES | tee /dev/stderr | grep -Po '(?<=Test error: )([0-9]{1,3}([\.]?[0-9]*))'`
-
-echo "$EXPERIMENT;$TASK;$TRAIN;$VAL;$TEST" >> results.csv
