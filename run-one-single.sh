@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# ONLY FOR EXPERIMENTS 1-4 !
+
 trap "exit" INT
 
 for r in {1..10}
@@ -9,4 +12,3 @@ do
         ./run-experiment.sh -t=${t} -e=${1}
     done
 done
-    
