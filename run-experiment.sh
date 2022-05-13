@@ -71,10 +71,10 @@ do
         RES=$( python2.7 babi_runner.py --LS --hops 3 -j --save-results --results-path 'results/results_7.csv' | tee /dev/stderr )
     elif [ ${EXPERIMENT} -eq 8 ]; then
         # PE + LS + RN + joint
-        RES=$( python2.7 babi_runner.py --LS -j -RN --save-results --results-path 'results/results_8.csv' | tee /dev/stderr )
+        RES=$( python2.7 babi_runner.py --LS -j --RN --save-results --results-path 'results/results_8.csv' | tee /dev/stderr )
     elif [ ${EXPERIMENT} -eq 9 ]; then
         # PE + LS + LW + joint
-        RES=$( python2.7 babi_runner.py --LS -j -LW --save-results --results-path 'results/results_9.csv' | tee /dev/stderr )
+        RES=$( python2.7 babi_runner.py --LS -j --LW --save-results --results-path 'results/results_9.csv' | tee /dev/stderr )
     else
         echo "Unknown experiment"
     fi
