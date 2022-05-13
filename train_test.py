@@ -28,6 +28,9 @@ def train(train_story, train_questions, train_qstory, memory, model, loss, gener
         "max_grad_norm": train_config["max_grad_norm"]
     }
 
+    last_train_error = None
+    last_val_error = None
+
     for ep in range(nepochs):
         # Decrease learning rate after every decay step
         if (ep + 1) % lrate_decay_step == 0:
@@ -130,6 +133,12 @@ def train(train_story, train_questions, train_qstory, memory, model, loss, gener
 
         print("%d | train error: %g | val error: %g" % (ep + 1, train_error, val_error))
 
+        if ep == nepochs - 1:
+            last_train_error = train_error
+            last_val_error = val_error
+
+    return last_train_error, last_val_error
+
 
 def train_linear_start(train_story, train_questions, train_qstory, memory, model, loss, general_config):
 
@@ -150,7 +159,7 @@ def train_linear_start(train_story, train_questions, train_qstory, memory, model
     train_config["init_lrate"]      = general_config.ls_init_lrate
 
     # Train with new settings
-    train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+    _, _ = train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
 
     # Add softmax back
     for i in range(general_config.nhops):
@@ -162,13 +171,15 @@ def train_linear_start(train_story, train_questions, train_qstory, memory, model
     train_config["init_lrate"]      = init_lrate2
 
     # Train with old settings
-    train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+    last_train_error, last_val_error = train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+    return last_train_error, last_val_error
 
 
-def test(test_story, test_questions, test_qstory, memory, model, loss, general_config):
+def test(test_story, test_questions, test_qstory, memory, model, loss, general_config, task_id, last_train_error, last_val_error):
     total_test_err = 0.
     total_test_num = 0
 
+    results_path = general_config.results_path
     nhops        = general_config.nhops
     train_config = general_config.train_config
     batch_size   = general_config.batch_size
@@ -210,3 +221,6 @@ def test(test_story, test_questions, test_qstory, memory, model, loss, general_c
 
     test_error = total_test_err / total_test_num
     print("Test error: %f" % test_error)
+
+    with open(results_path, 'a') as f:
+        f.write("{},{},{},{}\n".format(task_id, last_train_error, last_val_error, test_error))

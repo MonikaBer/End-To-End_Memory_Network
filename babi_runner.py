@@ -34,7 +34,8 @@ def run_task(
     init_lrate,
     max_grad_norm,
     embed_dim,
-    sent_nr):
+    sent_nr,
+    results_path):
     """
     Train and test for each task
     """
@@ -67,18 +68,19 @@ def run_task(
         init_lrate = init_lrate,
         max_grad_norm = max_grad_norm,
         embed_dim = embed_dim,
-        sent_nr = sent_nr
+        sent_nr = sent_nr,
+        results_path = results_path
     )
     general_config.split_sets(train_questions = train_questions)
 
     memory, model, loss = build_model(general_config)
 
     if general_config.linear_start:
-        train_linear_start(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+        last_train_error, last_val_error = train_linear_start(train_story, train_questions, train_qstory, memory, model, loss, general_config)
     else:
-        train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+        last_train_error, last_val_error = train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
 
-    test(test_story, test_questions, test_qstory, memory, model, loss, general_config)
+    test(test_story, test_questions, test_qstory, memory, model, loss, general_config, task_id, last_train_error, last_val_error)
 
 
 def run_all_tasks(
@@ -99,7 +101,8 @@ def run_all_tasks(
         init_lrate,
         max_grad_norm,
         embed_dim,
-        sent_nr):
+        sent_nr,
+        results_path):
     """
     Train and test for all tasks
     """
@@ -124,7 +127,8 @@ def run_all_tasks(
             init_lrate = init_lrate,
             max_grad_norm = max_grad_norm,
             embed_dim = embed_dim,
-            sent_nr = sent_nr
+            sent_nr = sent_nr,
+            results_path = results_path
         )
 
 
@@ -146,7 +150,8 @@ def run_joint_tasks(
         init_lrate,
         max_grad_norm,
         embed_dim,
-        sent_nr):
+        sent_nr,
+        results_path):
     """
     Train and test for all tasks but the trained model is built using training data from all tasks.
     """
@@ -185,16 +190,17 @@ def run_joint_tasks(
         init_lrate = init_lrate,
         max_grad_norm = max_grad_norm,
         embed_dim = embed_dim,
-        sent_nr = sent_nr
+        sent_nr = sent_nr,
+        results_path = results_path
     )
     general_config.split_sets(train_questions = train_questions)
 
     memory, model, loss = build_model(general_config)
 
     if general_config.linear_start:
-        train_linear_start(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+        last_train_error, last_val_error = train_linear_start(train_story, train_questions, train_qstory, memory, model, loss, general_config)
     else:
-        train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
+        last_train_error, last_val_error = train(train_story, train_questions, train_qstory, memory, model, loss, general_config)
 
     # Test on each task
     for t in tasks:
@@ -204,7 +210,7 @@ def run_joint_tasks(
         test_story, test_questions, test_qstory = parse_babi_task(test_data_path, dictionary, False)
         assert dc == len(dictionary)  # make sure that the dictionary already covers all words
 
-        test(test_story, test_questions, test_qstory, memory, model, loss, general_config)
+        test(test_story, test_questions, test_qstory, memory, model, loss, general_config, t + 1, last_train_error, last_val_error)
 
 
 def main():
@@ -212,6 +218,12 @@ def main():
     # dataset 1k/10k
     parser.add_argument("-d", "--data-dir", default = "data/tasks_1-20_v1-2/en",
                         help = "path to dataset directory (default: %(default)s)")
+
+    # save results
+    parser.add_argument("--save-results", action = "store_true",
+                        help = "save results (default: %(default)s)")
+    parser.add_argument("--results-path", type = str, default = "results/results.csv",
+                        help = "path to file with results (default: %(default)s)")
 
     # experiment variants
     parser.add_argument("--epochs", type = int,
@@ -261,11 +273,25 @@ def main():
                        help = "train and test for all tasks (all together) (default: %(default)s)")
     args = parser.parse_args()
 
+
     # Check if data is available
     if not os.path.exists(args.data_dir):
         print("The data directory '%s' does not exist. Please download it first." % args.data_dir)
         sys.exit(1)
     print("Using data from %s" % args.data_dir)
+
+
+    # Whether results should be saved
+    if not args.save_results:
+        args.results_path = None
+    elif not os.path.exists(args.results_path):
+        try:
+            os.makedirs(os.path.dirname(args.results_path))
+        except:
+            pass
+        with open(args.results_path, 'w') as f:
+            f.write("task_id,train_error,val_error,test_error\n")
+
 
     if args.joint_tasks:
         # joint training
@@ -298,7 +324,8 @@ def main():
             init_lrate = args.init_lrate,
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
-            sent_nr = args.sent_nr
+            sent_nr = args.sent_nr,
+            results_path = args.results_path
         )
         return 0
 
@@ -333,7 +360,8 @@ def main():
             init_lrate = args.init_lrate,
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
-            sent_nr = args.sent_nr
+            sent_nr = args.sent_nr,
+            results_path = args.results_path
         )
     else:
         run_task(
@@ -355,7 +383,8 @@ def main():
             init_lrate = args.init_lrate,
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
-            sent_nr = args.sent_nr
+            sent_nr = args.sent_nr,
+            results_path = args.results_path
         )
 
     return 0

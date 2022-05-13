@@ -23,8 +23,11 @@ class BabiConfig(object):
         init_lrate,
         max_grad_norm,
         embed_dim,
-        sent_nr
+        sent_nr,
+        results_path
         ):
+
+        self.results_path = results_path
 
         self.dictionary = dictionary
         self.batch_size = batch_size
@@ -106,7 +109,8 @@ class BabiConfigJoint(BabiConfig):
         init_lrate,
         max_grad_norm,
         embed_dim,
-        sent_nr):
+        sent_nr,
+        results_path):
 
         super(BabiConfigJoint, self).__init__(
             train_story,
@@ -127,7 +131,8 @@ class BabiConfigJoint(BabiConfig):
             init_lrate,
             max_grad_norm,
             embed_dim,
-            sent_nr
+            sent_nr,
+            results_path
         )
 
 
