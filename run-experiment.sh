@@ -44,14 +44,13 @@ then
       TIMES=1
 fi
 
-source venv/bin/activate
 RESULT_REGEX='100 \| train error: .*\nTest error: ([0-9]{1,3}([\.]?[0-9]*))'
 
 if [ ! -f results.csv ]; then
     echo "EXPERIMENT;TASK;TRAIN;VAL;TEST" > results.csv
 fi
 
-for i in $( eval echo {1..${TIMES}} ) 
+for i in $( eval echo {1..${TIMES}} )
 do
     echo "Iteration $i"
 
