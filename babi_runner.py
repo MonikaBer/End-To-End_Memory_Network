@@ -10,9 +10,9 @@ from config import BabiConfig, BabiConfigJoint
 from train_test import train, train_linear_start, test
 from util import parse_babi_task, build_model
 
-seed_val = 42
-random.seed(seed_val)
-np.random.seed(seed_val)  # for reproducing
+# seed_val = 42
+# random.seed(seed_val)
+# np.random.seed(seed_val)  # for reproducing
 
 
 def run_task(
