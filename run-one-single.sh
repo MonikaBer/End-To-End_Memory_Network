@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run one specific single-task experiment
 
 # ONLY FOR EXPERIMENTS 1-4 !
 

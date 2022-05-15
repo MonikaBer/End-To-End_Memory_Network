@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run one specific joint-task experiment
 
 # ONLY FOR EXPERIMENTS 5-9 !
 
