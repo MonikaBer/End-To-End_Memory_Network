@@ -57,10 +57,11 @@ python2.7 babi_runner.py -t 1
 
 - To run specific experiment run:
 ```
-./run-experiment.sh -t=1 -e=1 -r=2
+./run-experiment.sh -t=1 -e=1 -d=1 -r=2
 ```
  * t - task number
  * e - experiment number
+ * d - dataset type (1 - for 1k, 10 - for 10k)
  * r - number of repeats
 
 Experiments numeration:
@@ -76,18 +77,21 @@ Experiments numeration:
 | 7 | 3 hop + PE + LS + joint |
 | 8 | PE + LS + RN + joint |
 | 9 | PE + LS + LW + joint |
+| 10* | PE + LS + LW + RN + NL |
+
+##### 10* - only for 10k dataset (embedding dimension = 100)
 
 - To run one single-task experiment 10 times on all tasks run:
 ```
-./run-one-single.sh <exp_nr>
+./run-one-single.sh <exp_nr> <dataset_type>
 ```
 
 - To run one joint-task experiment 10 times run:
 ```
-./run-one-joint.sh <exp_nr>
+./run-one-joint.sh <exp_nr> <dataset_type>
 ```
 
 - To run all experiments 10 times on all tasks run:
 ```
-./run-all.sh
+./run-all.sh <dataset_type>
 ```
