@@ -222,5 +222,6 @@ def test(test_story, test_questions, test_qstory, memory, model, loss, general_c
     test_error = total_test_err / total_test_num
     print("Test error: %f" % test_error)
 
-    with open(results_path, 'a') as f:
-        f.write("{},{},{},{}\n".format(task_id, last_train_error, last_val_error, test_error))
+    if results_path:
+        with open(results_path, 'a') as f:
+            f.write("{},{},{},{}\n".format(task_id, last_train_error, last_val_error, test_error))

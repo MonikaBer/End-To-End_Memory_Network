@@ -35,19 +35,21 @@ def run_task(
     max_grad_norm,
     embed_dim,
     sent_nr,
-    results_path):
+    results_path,
+    dataset_type,
+    story_size):
     """
     Train and test for each task
     """
-    print("Train and test for task %d ..." % task_id)
+    print("Train and test for task %d on dataset %s ..." % (task_id, dataset_type))
 
     # Parse data
     train_files = glob.glob('%s/qa%d_*_train.txt' % (data_dir, task_id))
     test_files  = glob.glob('%s/qa%d_*_test.txt' % (data_dir, task_id))
 
     dictionary = {"nil": 0}
-    train_story, train_questions, train_qstory = parse_babi_task(train_files, dictionary, False)
-    test_story, test_questions, test_qstory    = parse_babi_task(test_files, dictionary, False)
+    train_story, train_questions, train_qstory = parse_babi_task(train_files, dictionary, False, story_size)
+    test_story, test_questions, test_qstory    = parse_babi_task(test_files, dictionary, False, story_size)
 
     general_config = BabiConfig(
         train_story = train_story,
@@ -102,11 +104,13 @@ def run_all_tasks(
         max_grad_norm,
         embed_dim,
         sent_nr,
-        results_path):
+        results_path,
+        dataset_type,
+        story_size):
     """
     Train and test for all tasks
     """
-    print("Training and testing for all tasks ...")
+    print("Training and testing for all tasks on dataset %s ..." % dataset_type)
     for t in range(20):
         run_task(
             task_id = t + 1,
@@ -128,7 +132,9 @@ def run_all_tasks(
             max_grad_norm = max_grad_norm,
             embed_dim = embed_dim,
             sent_nr = sent_nr,
-            results_path = results_path
+            results_path = results_path,
+            dataset_type = dataset_type,
+            story_size = story_size
         )
 
 
@@ -151,11 +157,13 @@ def run_joint_tasks(
         max_grad_norm,
         embed_dim,
         sent_nr,
-        results_path):
+        results_path,
+        dataset_type,
+        story_size):
     """
     Train and test for all tasks but the trained model is built using training data from all tasks.
     """
-    print("Jointly train and test for all tasks ...")
+    print("Jointly train and test for all tasks on dataset %s ..." % dataset_type)
     tasks = range(20)
 
     # Parse training data
@@ -164,12 +172,12 @@ def run_joint_tasks(
         train_data_path += glob.glob('%s/qa%d_*_train.txt' % (data_dir, t + 1))
 
     dictionary = {"nil": 0}
-    train_story, train_questions, train_qstory = parse_babi_task(train_data_path, dictionary, False)
+    train_story, train_questions, train_qstory = parse_babi_task(train_data_path, dictionary, False, story_size)
 
     # Parse test data for each task so that the dictionary covers all words before training
     for t in tasks:
         test_data_path = glob.glob('%s/qa%d_*_test.txt' % (data_dir, t + 1))
-        parse_babi_task(test_data_path, dictionary, False) # ignore output for now
+        parse_babi_task(test_data_path, dictionary, False, story_size)          # ignore output for now
 
     general_config = BabiConfigJoint(
         train_story = train_story,
@@ -207,7 +215,7 @@ def run_joint_tasks(
         print("Testing for task %d ..." % (t + 1))
         test_data_path = glob.glob('%s/qa%d_*_test.txt' % (data_dir, t + 1))
         dc = len(dictionary)
-        test_story, test_questions, test_qstory = parse_babi_task(test_data_path, dictionary, False)
+        test_story, test_questions, test_qstory = parse_babi_task(test_data_path, dictionary, False, story_size)
         assert dc == len(dictionary)  # make sure that the dictionary already covers all words
 
         test(test_story, test_questions, test_qstory, memory, model, loss, general_config, t + 1, last_train_error, last_val_error)
@@ -281,6 +289,15 @@ def main():
     print("Using data from %s" % args.data_dir)
 
 
+    # Define dataset type and story size
+    if args.data_dir.find("10k") != -1:
+        dataset_type = "10k"
+        story_size = 10000
+    else:
+        dataset_type = "1k"
+        story_size = 3500
+
+
     # Whether results should be saved
     if not args.save_results:
         args.results_path = None
@@ -298,7 +315,7 @@ def main():
         if args.epochs == None:
             args.epochs = 60
         if args.lrate_decay_step == None:
-            args.lrate_decay_step = 15  # reduce learning rate by half every 15 epochs
+            args.lrate_decay_step = 15      # reduce learning rate by half every 15 epochs
         if args.ls_nepochs == None:
             args.ls_nepochs = 30
         if args.ls_lrate_decay_step == None:
@@ -325,7 +342,9 @@ def main():
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
             sent_nr = args.sent_nr,
-            results_path = args.results_path
+            results_path = args.results_path,
+            dataset_type = dataset_type,
+            story_size = story_size
         )
         return 0
 
@@ -333,7 +352,7 @@ def main():
     if args.epochs == None:
         args.epochs = 100
     if args.lrate_decay_step == None:
-        args.lrate_decay_step = 25  # reduce learning rate by half every 25 epochs
+        args.lrate_decay_step = 25      # reduce learning rate by half every 25 epochs
     if args.ls_nepochs == None:
         args.ls_nepochs = 20
     if args.ls_lrate_decay_step == None:
@@ -361,7 +380,9 @@ def main():
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
             sent_nr = args.sent_nr,
-            results_path = args.results_path
+            results_path = args.results_path,
+            dataset_type = dataset_type,
+            story_size = story_size
         )
     else:
         run_task(
@@ -384,7 +405,9 @@ def main():
             max_grad_norm = args.max_grad_norm,
             embed_dim = args.embed_dim,
             sent_nr = args.sent_nr,
-            results_path = args.results_path
+            results_path = args.results_path,
+            dataset_type = dataset_type,
+            story_size = story_size
         )
 
     return 0
