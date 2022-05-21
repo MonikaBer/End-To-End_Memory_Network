@@ -48,8 +48,17 @@ def get_results_for_all_exps(agg_setting, results_path):
     # print('\n\n')
     # print(results_1k_files)
 
-    print('\nRESULTS FOR 1K DATASET:\n%s' % get_results(agg_setting = agg_setting, dataset_type = '1k', results_files = results_1k_files))
-    print('\nRESULTS FOR 10K DATASET:\n%s' % get_results(agg_setting = agg_setting, dataset_type = '10k', results_files = results_10k_files))
+    df_1k_results = get_results(agg_setting = agg_setting, dataset_type = '1k', results_files = results_1k_files)
+    df_10k_results = get_results(agg_setting = agg_setting, dataset_type = '10k', results_files = results_10k_files)
+    
+    df_paper_results = pd.read_csv("./paper_results_table.csv", delimiter=" ").iloc[:20,:]
+    df_paper_results.index = pd.RangeIndex(1,21,1)
+    
+    df_diff = df_1k_results.subtract(df_paper_results)
+
+    print('\nRESULTS FOR 1K DATASET:\n%s' % df_1k_results)
+    print('\nRESULTS FOR 10K DATASET:\n%s' % df_10k_results)
+    print('\nDIFFERENCE FOR 1K DATASET(CALCULATED RESULTS - PAPER RESULTS):\n%s' % df_diff)
 
 def create_df_with_results(filepath, dataset_type):
     df = pd.read_csv(filepath, engine = 'python')
