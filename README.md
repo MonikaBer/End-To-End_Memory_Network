@@ -50,7 +50,7 @@ rm tasks_1-20_v1-2.tar.gz
 ```
 
 # Execution
-1. Scripts for model training
+## 1. Scripts for model training
 - Python script
 ```
 python2.7 babi_runner.py -t 1
@@ -97,7 +97,7 @@ Experiments numeration:
 ./run-all.sh <dataset_type>
 ```
 
-2. Script for results visualisation
+## 2. Script for results visualisation
 ```
 python2.7 show_results.py --agg "(train, min)" --results-path "results/" --dataset_exp 10k_10
 ```
