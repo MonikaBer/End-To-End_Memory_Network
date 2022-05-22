@@ -1,5 +1,6 @@
 import os
 import sys
+from numpy import int16
 import pandas as pd
 from argparse import ArgumentParser
 
@@ -9,6 +10,10 @@ arg:
 returns:
   tuple - ex. ("train", "min"), where 1st - error type, 2nd - agg func
 '''
+
+METRIC_MEAN = "Mean error (%)"
+METRIC_COUNT = "Failed tasks (err. > 5%)"
+
 def str2list(s):
     s = s.replace('(', '').replace(')', '').replace(' ', '')
     list_str = map(str, s.split(','))
@@ -44,15 +49,11 @@ def get_results_for_all_exps(agg_setting, results_path):
         else:
             results_1k_files.append('%s%s' % (results_path, f))
 
-    # print(results_10k_files)
-    # print('\n\n')
-    # print(results_1k_files)
-
     df_1k_results = get_results(agg_setting = agg_setting, dataset_type = '1k', results_files = results_1k_files)
     df_10k_results = get_results(agg_setting = agg_setting, dataset_type = '10k', results_files = results_10k_files)
     
-    df_paper_results = pd.read_csv("./paper_results_table.csv", delimiter=" ").iloc[:20,:]
-    df_paper_results.index = pd.RangeIndex(1,21,1)
+    df_paper_results = pd.read_csv("./paper_results_table.csv", delimiter=" ")
+    df_paper_results.index = list(pd.RangeIndex(1,21,1)) + [METRIC_MEAN, METRIC_COUNT]
     
     df_diff = df_1k_results.subtract(df_paper_results)
 
@@ -107,7 +108,7 @@ def get_results(agg_setting, dataset_type, results_files):
         # 10k dataset
         experiments_ids = [str(i) for i in range(1, 11)]
 
-    results_df = pd.DataFrame(index = tasks_ids, columns = experiments_ids)
+    results_df = pd.DataFrame(index = tasks_ids, columns = experiments_ids, dtype=object)
     results_df = results_df.fillna(0)  # fill new DataFrame with 0s
 
     for filepath in results_files:
@@ -130,10 +131,15 @@ def get_results(agg_setting, dataset_type, results_files):
         )
 
         for task in range(1, 21):
-            results_df.loc[task, exp_nr] = round(df.iloc[task - 1]['test_error'] * 100, 1)
+            results_df.loc[task, exp_nr] = (df.iloc[task - 1]['test_error'] * 100).round(1)
 
+    results_df.loc[METRIC_MEAN] = results_df.mean().round(1)
+    results_df.loc[METRIC_COUNT] = results_df[results_df > 5].count()
     return results_df
 
+def get_additional_metrics(df):
+    assert(df.shape[0] == 20)
+    return
 
 def main():
     parser = ArgumentParser()
