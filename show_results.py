@@ -52,14 +52,22 @@ def get_results_for_all_exps(agg_setting, results_path):
     df_1k_results = get_results(agg_setting = agg_setting, dataset_type = '1k', results_files = results_1k_files)
     df_10k_results = get_results(agg_setting = agg_setting, dataset_type = '10k', results_files = results_10k_files)
     
-    df_paper_results = pd.read_csv("./paper_results_table.csv", delimiter=" ")
-    df_paper_results.index = list(pd.RangeIndex(1,21,1)) + [METRIC_MEAN, METRIC_COUNT]
+    df_paper_results1k = pd.read_csv("./paper_results_table.csv", delimiter=" ")
+    df_paper_results1k.index = list(pd.RangeIndex(1,21,1)) + [METRIC_MEAN, METRIC_COUNT]
+
+    df_paper_results10k = pd.read_csv("./paper_results_table_10k.csv", delimiter=" ")
+    print(df_paper_results10k.columns)
+    # move exp 10 from 5th column to the end
+    df_paper_results10k = df_paper_results10k[[str(i) for i in range(1,11,1)]]
+    df_paper_results10k.index = list(pd.RangeIndex(1,21,1)) + [METRIC_MEAN, METRIC_COUNT]
     
-    df_diff = df_1k_results.subtract(df_paper_results)
+    df_diff_1k = df_1k_results.subtract(df_paper_results1k)
+    df_diff_10k = df_10k_results.subtract(df_paper_results10k)
 
     print('\nRESULTS FOR 1K DATASET:\n%s' % df_1k_results)
     print('\nRESULTS FOR 10K DATASET:\n%s' % df_10k_results)
-    print('\nDIFFERENCE FOR 1K DATASET(CALCULATED RESULTS - PAPER RESULTS):\n%s' % df_diff)
+    print('\nDIFFERENCE FOR 1K DATASET(CALCULATED RESULTS - PAPER RESULTS):\n%s' % df_diff_1k)
+    print('\nDIFFERENCE FOR 10K DATASET(CALCULATED RESULTS - PAPER RESULTS):\n%s' % df_diff_10k)
 
 def create_df_with_results(filepath, dataset_type):
     df = pd.read_csv(filepath, engine = 'python')
