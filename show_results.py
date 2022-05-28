@@ -142,7 +142,7 @@ def get_results(agg_setting, dataset_type, results_files):
             results_df.loc[task, exp_nr] = (df.iloc[task - 1]['test_error'] * 100).round(1)
 
     results_df.loc[METRIC_MEAN] = results_df.mean().round(1)
-    results_df.loc[METRIC_COUNT] = results_df[results_df > 5].count()
+    results_df.loc[METRIC_COUNT] = results_df.iloc[:20,:][results_df > 5].count()
     return results_df
 
 def get_additional_metrics(df):
